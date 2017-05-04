@@ -1,6 +1,7 @@
 package com.oldsneerjaw
 
 import mockws.MockWS
+import org.joda.time.DateTime
 import org.specs2.specification._
 import play.api._
 import play.api.libs.json._
@@ -27,7 +28,7 @@ class BenchApiClientSpec extends PlaySpecification {
   "Bench API client" should {
     "return the collection of transactions if they exist" in new TestScope {
       val pageNumber = 2
-      val expectedTransactions = Seq(TransactionInfo("my-date", "my-account", "my-amount", "my-company"))
+      val expectedTransactions = Seq(TransactionInfo(new DateTime(2017, 4, 3, 0, 0), "my-account", "my-amount", "my-company"))
       val expectedTransactionsSummary = TransactionResultSummary(1, pageNumber, expectedTransactions)
       val mockWS = wsClient(pageNumber, Ok(Json.toJson(expectedTransactionsSummary)))
 
