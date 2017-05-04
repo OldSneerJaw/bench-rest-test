@@ -9,7 +9,7 @@ import play.api.libs.json._
   * A single transaction (e.g. income or expense).
   *
   * @param date the date of the transaction
-  * @param ledger the ledger/account name
+  * @param ledger the ledger to which the transaction is assigned
   * @param amount the amount in dollars as a string
   * @param company the company associated with the transaction
   */
