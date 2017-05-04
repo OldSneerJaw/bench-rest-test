@@ -18,7 +18,7 @@ class TransactionRetriever(benchApiClient: BenchApiClient)(implicit executionCon
     */
   @throws[IOException]("if the one of the server's responses is invalid")
   def fetchAllTransactionPages(): Future[Stream[TransactionPage]] = {
-    // Create a sequence of page numbers to attempt to retrieve
+    // Start by retrieving the first page to see what we're dealing with
     benchApiClient.fetchResultPage(1) flatMap {
       case None => Future.successful(Stream.empty)
       case Some(firstPage) if firstPage.transactions.isEmpty =>
@@ -29,7 +29,7 @@ class TransactionRetriever(benchApiClient: BenchApiClient)(implicit executionCon
         // (except possibly for the last page, which may have fewer transactions)
         val numPages = Math.ceil(firstPage.totalCount.toFloat / firstPage.transactions.size).toInt
 
-        // Fold over all possible page numbers to fetch the complete collection of transactions
+        // Map over all possible page numbers to fetch the complete collection of transactions
         val pageNumbers = (2 to numPages).toStream
         val subsequentPageFutures = pageNumbers.map { pageNumber =>
           benchApiClient.fetchResultPage(pageNumber) map {

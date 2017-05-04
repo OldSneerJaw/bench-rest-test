@@ -13,6 +13,6 @@ case class TransactionPage(totalCount: Int, page: Int, transactions: Seq[Transac
 
 object TransactionPage {
   // Automatically converts a transaction summary page to/from JSON because the class' fields have the exact same names and types as in the
-  // source API
+  // source API (unlike in TransactionInfo where the JSON field names differ from the Scala class field names)
   implicit val jsonFormat = Json.format[TransactionPage]
 }

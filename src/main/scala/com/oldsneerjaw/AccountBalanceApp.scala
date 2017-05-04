@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
-  * A simple application that downloads and prints account balances to the console.
+  * A simple application that downloads and prints bank account balances to the console.
   */
 object AccountBalanceApp extends App {
   implicit val actorSystem = ActorSystem()

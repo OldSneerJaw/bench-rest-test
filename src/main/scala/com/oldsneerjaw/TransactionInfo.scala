@@ -16,7 +16,7 @@ import play.api.libs.json._
 case class TransactionInfo(date: DateTime, ledger: String, amount: String, company: String)
 
 object TransactionInfo {
-  // Serializes Scala object into JSON
+  // Custom JSON serializer because the JSON field names don't match those of the Scala class
   implicit val jsonWrites: Writes[TransactionInfo] = (
     (__ \ "Date").write[DateTime] and
     (__ \ "Ledger").write[String] and
@@ -24,7 +24,7 @@ object TransactionInfo {
     (__ \ "Company").write[String]
   )(unlift(TransactionInfo.unapply))
 
-  // Deserializes JSON into Scala object
+  // Custom JSON deserializer because the JSON field names don't match those of the Scala class
   implicit val jsonReads: Reads[TransactionInfo] = (
     (__ \ "Date").read[DateTime] and
     (__ \ "Ledger").read[String] and
