@@ -1,10 +1,15 @@
-This repo contains a solution to the Bench Rest Test. It was implemented by Joel Andrews using Scala. As such, it requires Java 6, 7 or 8 to
-run.
+# Introduction
 
-Usage:
+This repo contains a solution to the Bench Rest Test. It was implemented by Joel Andrews using Scala. The project also makes use of Play Framework 2.5's libraries to help with HTTP requests and specifications. As such, the Scala version is limited to 2.11.
+
+# Usage
+
+The project requires Java 6+ to run.
 
 * Run the app to fetch and tally the balances from the API: `./sbt run`
 * Run the unit tests: `./sbt test`
+
+# Problem
 
 For reference, here is the original problem description:
 
