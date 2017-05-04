@@ -45,7 +45,7 @@ class BalanceCalculatorSpec extends PlaySpecification {
         val date2 = new DateTime(2017, 5, 3, 0, 0)
         val page2 = TransactionPage(4, 2, Seq(TransactionInfo(date2, "ledger2", "16.77", "company2")))
 
-        val date3 = new DateTime(2017, 5, 1, 0, 0)
+        val date3 = new DateTime(2017, 4, 29, 0, 0)
         val page3 = TransactionPage(4, 3, Seq(TransactionInfo(date3, "ledger3", "-42.85", "company3")))
 
         val page4 = TransactionPage(4, 4, Seq(TransactionInfo(date1, "ledger4", "11.13", "company4")))
@@ -55,7 +55,10 @@ class BalanceCalculatorSpec extends PlaySpecification {
         val result = calculator.calculateDailyBalances(transactionPages)
 
         result mustEqual Seq(
+          DailyBalance(new DateTime(2017, 4, 28, 0, 0), BigDecimal(0)),
           DailyBalance(date3, BigDecimal("-42.85")),
+          DailyBalance(new DateTime(2017, 4, 30, 0, 0), BigDecimal("-42.85")),
+          DailyBalance(new DateTime(2017, 5, 1, 0, 0), BigDecimal("-42.85")),
           DailyBalance(date1, BigDecimal("-15.82")),
           DailyBalance(date2, BigDecimal("0.95")))
       }

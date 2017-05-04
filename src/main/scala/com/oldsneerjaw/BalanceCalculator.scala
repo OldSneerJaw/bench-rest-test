@@ -50,7 +50,8 @@ class BalanceCalculator {
       val (dailyBalanceMap, totalBalance) = runningTotals
 
       val updatedBalance = totalBalance + parseAmount(transaction.amount)
-      val updatedDailyBalanceMap = dailyBalanceMap.+((transaction.date.getMillis, updatedBalance))
+      val filledInDailyBalanceMap = fillInMissingDays(dailyBalanceMap, transaction.date)
+      val updatedDailyBalanceMap = filledInDailyBalanceMap.+((transaction.date.getMillis, updatedBalance))
 
       (updatedDailyBalanceMap, updatedBalance)
     }
@@ -58,6 +59,22 @@ class BalanceCalculator {
     // Convert the map to a sequence
     computedDailyBalanceMap.toSeq map { dailyBalanceEntry =>
       DailyBalance(new DateTime(dailyBalanceEntry._1), dailyBalanceEntry._2)
+    }
+  }
+
+  private def fillInMissingDays(dailyBalanceMap: TreeMap[Long, BigDecimal], currentDate: DateTime): TreeMap[Long, BigDecimal] = {
+    dailyBalanceMap.lastOption match {
+      case None =>
+        // The map is empty, so add the first day, which should be one day before the current date
+        dailyBalanceMap.+((currentDate.minusDays(1).getMillis, BigDecimal(0)))
+      case Some(lastEntry) =>
+        if (currentDate.minusDays(1).isAfter(lastEntry._1)) {
+          val updatedDailyBalanceMap = dailyBalanceMap.+((new DateTime(lastEntry._1).plusDays(1).getMillis, lastEntry._2))
+          // Now ensure that we fill in the intervening days recursively as well
+          fillInMissingDays(updatedDailyBalanceMap, currentDate)
+        } else {
+          dailyBalanceMap
+        }
     }
   }
 
