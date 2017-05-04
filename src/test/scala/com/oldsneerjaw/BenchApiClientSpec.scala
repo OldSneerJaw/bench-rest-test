@@ -9,6 +9,8 @@ import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.test._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class BenchApiClientSpec extends PlaySpecification {
 
   trait TestScope extends Scope {
@@ -29,12 +31,12 @@ class BenchApiClientSpec extends PlaySpecification {
     "return the collection of transactions if they exist" in new TestScope {
       val pageNumber = 2
       val expectedTransactions = Seq(TransactionInfo(new DateTime(2017, 4, 3, 0, 0), "my-account", "my-amount", "my-company"))
-      val expectedTransactionsSummary = TransactionResultSummary(1, pageNumber, expectedTransactions)
-      val mockWS = wsClient(pageNumber, Ok(Json.toJson(expectedTransactionsSummary)))
+      val expectedTransactionPage = TransactionPage(1, pageNumber, expectedTransactions)
+      val mockWS = wsClient(pageNumber, Ok(Json.toJson(expectedTransactionPage)))
 
       val result = await(apiClient(mockWS).fetchResultPage(pageNumber))
 
-      result must beSome(expectedTransactionsSummary)
+      result must beSome(expectedTransactionPage)
     }
 
     "return nothing if the page does not exist" in new TestScope {

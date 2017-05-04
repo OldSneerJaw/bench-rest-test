@@ -12,11 +12,11 @@ class BalanceCalculatorSpec extends PlaySpecification {
 
   "Balance calculator" should {
     "produce the correct total when there are transactions" in new TestScope {
-      val transactionSummaries = Seq(
-        TransactionResultSummary(0, 1, Seq(TransactionInfo(exampleDate, "", "15.90", ""), TransactionInfo(exampleDate, "", "-32.03", ""))),
-        TransactionResultSummary(0, 2, Seq(TransactionInfo(exampleDate, "", "-4", ""), TransactionInfo(exampleDate, "", "invalid-number", ""))))
+      val transactionPages = Seq(
+        TransactionPage(0, 1, Seq(TransactionInfo(exampleDate, "", "15.90", ""), TransactionInfo(exampleDate, "", "-32.03", ""))),
+        TransactionPage(0, 2, Seq(TransactionInfo(exampleDate, "", "-4", ""), TransactionInfo(exampleDate, "", "invalid-number", ""))))
 
-      val result = calculator.calculateTotal(transactionSummaries)
+      val result = calculator.calculateTotal(transactionPages)
 
       result mustEqual BigDecimal("-20.13")
     }
@@ -28,9 +28,9 @@ class BalanceCalculatorSpec extends PlaySpecification {
     }
 
     "produce a total of zero when the transaction summaries have no transactions" in new TestScope {
-      val transactionSummaries = Seq(TransactionResultSummary(0, 1, Seq.empty), TransactionResultSummary(0, 2, Seq.empty))
+      val transactionPages = Seq(TransactionPage(0, 1, Seq.empty), TransactionPage(0, 2, Seq.empty))
 
-      val result = calculator.calculateTotal(transactionSummaries)
+      val result = calculator.calculateTotal(transactionPages)
 
       result mustEqual BigDecimal(0)
     }

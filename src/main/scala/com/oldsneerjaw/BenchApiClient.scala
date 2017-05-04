@@ -5,12 +5,13 @@ import play.api.libs.json._
 import play.api.libs.ws._
 
 import scala.concurrent._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * An API client for the Bench Rest Test REST API: http://resttest.bench.co/
+  *
+  * @param wsClient The web service client that is used to perform HTTP requests
   */
-class BenchApiClient(wsClient: WSClient) {
+class BenchApiClient(wsClient: WSClient)(implicit executionContext: ExecutionContext) {
   private val apiBaseUrl = "http://resttest.bench.co/transactions"
 
   /**
@@ -18,17 +19,17 @@ class BenchApiClient(wsClient: WSClient) {
     *
     * @param pageNumber The number of the page to retrieve
     *
-    * @return A future transaction result summary, or None if the page does not exist
+    * @return A future transaction page, or None if the page does not exist
     */
-  def fetchResultPage(pageNumber: Long): Future[Option[TransactionResultSummary]] = {
+  def fetchResultPage(pageNumber: Long): Future[Option[TransactionPage]] = {
     val url = s"$apiBaseUrl/$pageNumber.json"
     wsClient.url(url).get() map { response =>
       if (response.status != Status.OK) {
         // The page of results does not exist
         None
       } else {
-        response.json.validate[TransactionResultSummary] match {
-          case jsSuccess: JsSuccess[TransactionResultSummary] => Option(jsSuccess.value)
+        response.json.validate[TransactionPage] match {
+          case jsSuccess: JsSuccess[TransactionPage] => Option(jsSuccess.value)
           case jsError: JsError =>
             println(s"Received an unexpected response from the server for request $url: ${jsError.toString}")
             None

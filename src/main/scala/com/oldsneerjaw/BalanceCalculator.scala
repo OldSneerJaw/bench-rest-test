@@ -1,12 +1,20 @@
 package com.oldsneerjaw
 
 /**
-  * Calculates the total balance of a collection of transaction summaries.
+  * Calculates the total account balance of a collection of transaction summaries.
   */
 class BalanceCalculator {
-  def calculateTotal(allTransactionSummaries: Seq[TransactionResultSummary]): BigDecimal = {
+
+  /**
+    * Determines the total balance taking into account all transactions.
+    *
+    * @param allTransactionPages a collection of all of the transaction pages
+    *
+    * @return The total balance
+    */
+  def calculateTotal(allTransactionPages: Seq[TransactionPage]): BigDecimal = {
     // Map all transactions into a single collection
-    val allTransactions = allTransactionSummaries flatMap { _.transactions }
+    val allTransactions = allTransactionPages flatMap { _.transactions }
 
     // Convert the transaction amounts to BigDecimal values
     val allTransactionAmounts = allTransactions map { transaction =>
