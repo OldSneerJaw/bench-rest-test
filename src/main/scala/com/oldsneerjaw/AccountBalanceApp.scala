@@ -1,5 +1,6 @@
 package com.oldsneerjaw
 
+import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
 import akka.actor._
@@ -19,18 +20,28 @@ object AccountBalanceApp extends App {
   val wsClient = AhcWSClient()
 
   val apiClient = new BenchApiClient(wsClient)
-  val transactionStreamer = new TransactionStreamer(apiClient)
+  val transactionRetriever = new TransactionRetriever(apiClient)
   val balanceCalculator = new BalanceCalculator()
 
-  val futureResults = transactionStreamer.fetchAllTransactionPages()
+  val futureTransanctionPages = transactionRetriever.fetchAllTransactionPages()
 
-  val totaledFutureResults = futureResults map { results =>
-    balanceCalculator.calculateTotal(results)
+  // Execute the future to retrieve the stream of pages
+  val transactionPages = Await result(futureTransanctionPages, Duration(30, TimeUnit.SECONDS))
+
+  val dailyBalances = balanceCalculator.calculateDailyBalances(transactionPages)
+
+  // Previously this relied on `balanceCalculator.calculateTotal`, but the total is already available to us via the last daily balance, so
+  // there's no need to duplicate effort
+  val totalBalance = dailyBalances.lastOption.map(_.balance).getOrElse(BigDecimal(0))
+
+  // Print out the balances, formatted with two decimal places
+  dailyBalances foreach { dailyBalance =>
+    val dateString = IsoDateTimeFormatter.formatter.print(dailyBalance.date)
+    val formattedBalance = dailyBalance.balance.setScale(2)
+    println(s"$dateString: $formattedBalance")
   }
 
-  val total = Await result(totaledFutureResults, Duration(10, TimeUnit.SECONDS))
-
-  println(s"Total balance: $total")
+  println(s"Total balance: ${totalBalance.setScale(2)}")
 
   wsClient.close()
   actorSystem.terminate()
