@@ -1,5 +1,7 @@
 package com.oldsneerjaw
 
+import java.io.IOException
+
 import mockws.MockWS
 import org.joda.time.DateTime
 import org.specs2.specification._
@@ -48,13 +50,18 @@ class BenchApiClientSpec extends PlaySpecification {
       result must beNone
     }
 
-    "return nothing if the response could not be parsed" in new TestScope {
+    "throw an exception if the response body could not be parsed" in new TestScope {
       val pageNumber = 7
+      val mockWS = wsClient(pageNumber, Ok("Foo!"))
+
+      await(apiClient(mockWS).fetchResultPage(pageNumber)) must throwAn[IOException]
+    }
+
+    "throw an exception if the response status is invalid" in new TestScope {
+      val pageNumber = 1
       val mockWS = wsClient(pageNumber, InternalServerError("Foo!"))
 
-      val result = await(apiClient(mockWS).fetchResultPage(pageNumber))
-
-      result must beNone
+      await(apiClient(mockWS).fetchResultPage(pageNumber)) must throwAn[IOException]
     }
   }
 }

@@ -1,6 +1,5 @@
 package com.oldsneerjaw
 
-import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
 import akka.actor._

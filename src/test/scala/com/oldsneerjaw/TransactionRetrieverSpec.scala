@@ -1,5 +1,7 @@
 package com.oldsneerjaw
 
+import java.io.IOException
+
 import org.joda.time.DateTime
 import org.specs2.mock._
 import org.specs2.specification._
@@ -76,6 +78,12 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
       there was one(mockBenchClient).fetchResultPage(1)
       there was no(mockBenchClient).fetchResultPage(2)
+    }
+
+    "throw an exception if a server response is invalid" in new TestScope {
+      mockBenchClient.fetchResultPage(anyInt) returns Future.failed(new IOException())
+
+      await(transactionRetriever.fetchAllTransactionPages()) must throwAn[IOException]
     }
   }
 }
