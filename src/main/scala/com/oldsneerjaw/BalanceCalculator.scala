@@ -1,6 +1,6 @@
 package com.oldsneerjaw
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, Duration}
 import play._
 
 import scala.collection.immutable.TreeMap
@@ -68,11 +68,16 @@ class BalanceCalculator {
         // The map is empty, so add the first day, which should be one day before the current date
         dailyBalanceMap.+((currentDate.minusDays(1).getMillis, BigDecimal(0)))
       case Some(lastEntry) =>
-        if (currentDate.minusDays(1).isAfter(lastEntry._1)) {
-          val updatedDailyBalanceMap = dailyBalanceMap.+((new DateTime(lastEntry._1).plusDays(1).getMillis, lastEntry._2))
-          // Now ensure that we fill in the intervening days recursively as well
-          fillInMissingDays(updatedDailyBalanceMap, currentDate)
+        val lastDate = new DateTime(lastEntry._1)
+        if (currentDate.minusDays(1).isAfter(lastDate)) {
+          // One or more intervening days had no transactions - fill them in with the same balance as the previous transaction date
+          val duration = new Duration(lastDate, currentDate)
+          val durationRange = 1 to duration.getStandardDays.toInt
+          durationRange.foldLeft(dailyBalanceMap) { (runningDailyBalanceMap, days) =>
+            runningDailyBalanceMap.+((lastDate.plusDays(days).getMillis, lastEntry._2))
+          }
         } else {
+          // There are no missing days to fill in
           dailyBalanceMap
         }
     }
