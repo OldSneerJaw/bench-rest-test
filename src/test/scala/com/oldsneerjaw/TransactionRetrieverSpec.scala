@@ -57,6 +57,24 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
       there was no(mockBenchClient).fetchResultPage(3)
     }
 
+    "retrieve all transaction pages when the last page is missing" in new TestScope {
+      val page1 = TransactionPage(3, 1, Seq(TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", "amount1", "company1")))
+      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", "amount2", "company2")))
+
+      mockBenchClient.fetchResultPage(1) returns Future(Option(page1))
+      mockBenchClient.fetchResultPage(2) returns Future(Option(page2))
+      mockBenchClient.fetchResultPage(3) returns Future(None)
+
+      val result = await(transactionRetriever.fetchAllTransactionPages())
+
+      result.toList mustEqual List(page1, page2)
+
+      there was one(mockBenchClient).fetchResultPage(1)
+      there was one(mockBenchClient).fetchResultPage(2)
+      there was one(mockBenchClient).fetchResultPage(3)
+      there was no(mockBenchClient).fetchResultPage(4)
+    }
+
     "return nothing when there are no pages" in new TestScope {
       mockBenchClient.fetchResultPage(anyInt) returns Future(None)
 
