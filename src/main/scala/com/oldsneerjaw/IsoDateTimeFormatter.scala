@@ -8,7 +8,7 @@ import play.api.libs.json._
   * Used to format Joda dates as ISO 8091 date strings without time and time zone components (e.g. "2017-05-03").
   */
 object IsoDateTimeFormatter {
-  val formatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+  val formatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC
 
   // Converts between Joda dates and JSON
   implicit val jsonFormat: Format[DateTime] = new Format[DateTime] {
