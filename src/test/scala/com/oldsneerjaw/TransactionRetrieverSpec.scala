@@ -19,9 +19,9 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
   "Transaction retriever" should {
     "retrieve all transaction pages when there is the same number of transactions on each page" in new TestScope {
-      val page1 = TransactionPage(3, 1, Seq(TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", "amount1", "company1")))
-      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", "amount2", "company2")))
-      val page3 = TransactionPage(3, 3, Seq(TransactionInfo(new DateTime(2017, 5, 3, 3, 3), "ledger3", "amount3", "company3")))
+      val page1 = TransactionPage(3, 1, Seq(TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", BigDecimal(-75.1), "company1")))
+      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", BigDecimal(33), "company2")))
+      val page3 = TransactionPage(3, 3, Seq(TransactionInfo(new DateTime(2017, 5, 3, 3, 3), "ledger3", BigDecimal(0.79), "company3")))
 
       mockBenchClient.fetchResultPage(1) returns Future(Option(page1))
       mockBenchClient.fetchResultPage(2) returns Future(Option(page2))
@@ -40,9 +40,9 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
     "retrieve all transaction pages when the first page has more transactions" in new TestScope {
       val page1 = TransactionPage(3, 1, Seq(
-        TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", "amount1", "company1"),
-        TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", "amount2", "company2")))
-      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 3, 3), "ledger3", "amount3", "company3")))
+        TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", BigDecimal(8.9), "company1"),
+        TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", BigDecimal(-1334.96), "company2")))
+      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 3, 3), "ledger3", BigDecimal(0.5), "company3")))
 
       mockBenchClient.fetchResultPage(1) returns Future(Option(page1))
       mockBenchClient.fetchResultPage(2) returns Future(Option(page2))
@@ -58,8 +58,8 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
     }
 
     "retrieve all transaction pages when the last page is missing" in new TestScope {
-      val page1 = TransactionPage(3, 1, Seq(TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", "amount1", "company1")))
-      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", "amount2", "company2")))
+      val page1 = TransactionPage(3, 1, Seq(TransactionInfo(new DateTime(2017, 5, 3, 1, 1), "ledger1", BigDecimal(6), "company1")))
+      val page2 = TransactionPage(3, 2, Seq(TransactionInfo(new DateTime(2017, 5, 3, 2, 2), "ledger2", BigDecimal(-94.77), "company2")))
 
       mockBenchClient.fetchResultPage(1) returns Future(Option(page1))
       mockBenchClient.fetchResultPage(2) returns Future(Option(page2))

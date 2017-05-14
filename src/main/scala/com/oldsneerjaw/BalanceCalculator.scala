@@ -1,7 +1,6 @@
 package com.oldsneerjaw
 
 import org.joda.time.{DateTime, Duration}
-import play._
 
 import scala.collection.mutable
 
@@ -9,8 +8,6 @@ import scala.collection.mutable
   * Calculates the total account balance of a collection of transaction summaries.
   */
 class BalanceCalculator {
-
-  private val logger = Logger.of(getClass)
 
   private type DailyBalanceEntry = (Long, BigDecimal)
 
@@ -23,14 +20,9 @@ class BalanceCalculator {
     */
   def calculateTotal(allTransactionPages: Seq[TransactionPage]): BigDecimal = {
     // Map all transactions into a single collection
-    val allTransactions = allTransactionPages flatMap { _.transactions }
+    val allTransactions = allTransactionPages.flatMap(_.transactions)
 
-    // Convert the transaction amounts to BigDecimal values
-    val allTransactionAmounts = allTransactions map { transaction =>
-      parseAmount(transaction.amount)
-    }
-
-    allTransactionAmounts.sum
+    allTransactions.map(_.amount).sum
   }
 
   /**
@@ -42,7 +34,7 @@ class BalanceCalculator {
     */
   def calculateDailyBalances(allTransactionPages: Seq[TransactionPage]): Seq[DailyBalance] = {
     // Map all transactions into a single collection
-    val allTransactions = allTransactionPages flatMap { _.transactions }
+    val allTransactions = allTransactionPages.flatMap(_.transactions)
 
     // Sort all transactions by date
     val sortedTransactions = allTransactions.sortBy(_.date.getMillis)
@@ -54,7 +46,7 @@ class BalanceCalculator {
     sortedTransactions.foldLeft[Option[DailyBalanceEntry]](None) { (previousEntryOption, transaction) =>
       val runningBalance = previousEntryOption.map(_._2).getOrElse(BigDecimal(0))
 
-      val updatedBalance = runningBalance + parseAmount(transaction.amount)
+      val updatedBalance = runningBalance + transaction.amount
       val currentEntry = new DailyBalanceEntry(transaction.date.getMillis, updatedBalance)
 
       dailyBalanceMap ++= getMissingDays(transaction.date, previousEntryOption) += currentEntry
@@ -86,17 +78,6 @@ class BalanceCalculator {
           // There are no missing days to fill in
           Seq.empty
         }
-    }
-  }
-
-  private def parseAmount(amountString: String) = {
-    try {
-      BigDecimal(amountString)
-    } catch {
-      case _: NumberFormatException =>
-        // Fall back to zero if the number is in an invalid format
-        logger.error(s"Invalid transaction amount encountered: $amountString")
-        BigDecimal(0)
     }
   }
 }

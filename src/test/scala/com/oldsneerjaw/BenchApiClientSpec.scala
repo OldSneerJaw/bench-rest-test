@@ -32,7 +32,7 @@ class BenchApiClientSpec extends PlaySpecification {
   "Bench API client" should {
     "return the collection of transactions if they exist" in new TestScope {
       val pageNumber = 2
-      val expectedTransactions = Seq(TransactionInfo(new DateTime(2017, 4, 3, 0, 0, DateTimeZone.UTC), "my-account", "my-amount", "my-company"))
+      val expectedTransactions = Seq(TransactionInfo(new DateTime(2017, 4, 3, 0, 0, DateTimeZone.UTC), "my-account", BigDecimal(3), "my-company"))
       val expectedTransactionPage = TransactionPage(1, pageNumber, expectedTransactions)
       val mockWS = wsClient(pageNumber, Ok(Json.toJson(expectedTransactionPage)))
 
