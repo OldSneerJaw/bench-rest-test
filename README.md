@@ -8,6 +8,7 @@ The project requires Java 6+ to run.
 
 * Run the app to fetch and tally the balances from the API: `./sbt run`
 * Run the unit tests: `./sbt test`
+* Generate an HTML test coverage report at _target/scala-2.11/scoverage-report/index.html_: `./sbt coverage test coverageReport`
 
 # Problem
 
