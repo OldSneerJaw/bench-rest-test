@@ -41,7 +41,7 @@ class BalanceCalculator {
 
     // Uses a linked hash map to store the daily balances for two reasons: (1) to make retrieving and updating the existing balance for a
     // given day a constant time operation and (2) so that chronological order of transactions is preserved from the sort performed earlier
-    val dailyBalanceMap = new mutable.LinkedHashMap[Long, BigDecimal]()
+    val dailyBalanceMap = new mutable.LinkedHashMap[Long, BigDecimal]
 
     sortedTransactions.foldLeft[Option[DailyBalanceEntry]](None) { (previousEntryOption, transaction) =>
       val runningBalance = previousEntryOption.map(_._2).getOrElse(BigDecimal(0))

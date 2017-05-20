@@ -16,7 +16,7 @@ class TransactionRetriever(benchApiClient: BenchApiClient)(implicit executionCon
     *         - ParseException: if a response's format is invalid
     *         - HttpResponseException: if an unexpected HTTP response status is received
     */
-  def fetchAllTransactionPages(): Future[Seq[TransactionPage]] = {
+  def fetchAllTransactionPages: Future[Seq[TransactionPage]] = {
     // Start by retrieving the first page to see what we're dealing with
     benchApiClient.fetchResultPage(1) flatMap {
       case None => Future.successful(Seq.empty)
@@ -30,7 +30,7 @@ class TransactionRetriever(benchApiClient: BenchApiClient)(implicit executionCon
 
         // Map over all possible page numbers to fetch the complete collection of transactions
         val pageNumbers = (2 to numPages).toStream
-        val subsequentPageFutures = pageNumbers.map { pageNumber =>
+        val subsequentPageFutures = pageNumbers map { pageNumber =>
           benchApiClient.fetchResultPage(pageNumber) map {
             case Some(page) => Option(page)
             case None => None

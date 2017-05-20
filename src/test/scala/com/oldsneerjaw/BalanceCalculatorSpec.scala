@@ -7,7 +7,7 @@ import play.api.test._
 class BalanceCalculatorSpec extends PlaySpecification {
   trait TestScope extends Scope {
     val exampleDate = new DateTime(2017, 5, 3, 20, 49)
-    val calculator = new BalanceCalculator()
+    val calculator = new BalanceCalculator
   }
 
   "Balance calculator" should {

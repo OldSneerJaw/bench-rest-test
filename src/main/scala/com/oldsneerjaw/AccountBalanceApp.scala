@@ -22,9 +22,9 @@ object AccountBalanceApp extends App {
 
   val apiClient = new BenchApiClient(wsClient)
   val transactionRetriever = new TransactionRetriever(apiClient)
-  val balanceCalculator = new BalanceCalculator()
+  val balanceCalculator = new BalanceCalculator
 
-  val outputFuture = transactionRetriever.fetchAllTransactionPages().map { transactionPages =>
+  val outputFuture = transactionRetriever.fetchAllTransactionPages.map { transactionPages =>
     val dailyBalances = balanceCalculator.calculateDailyBalances(transactionPages)
 
     // Previously this relied on `balanceCalculator.calculateTotal`, but the total is already available to us via the last daily balance, so
@@ -45,8 +45,9 @@ object AccountBalanceApp extends App {
   }
 
   // Execute the future
-  Await result(outputFuture, Duration(30, TimeUnit.SECONDS))
+  Await.result(outputFuture, Duration(30, TimeUnit.SECONDS))
 
+  // Clean up
   wsClient.close()
-  actorSystem.terminate()
+  Await.result(actorSystem.terminate(), Duration(10, TimeUnit.SECONDS))
 }

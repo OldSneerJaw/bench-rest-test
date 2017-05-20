@@ -28,7 +28,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
       mockBenchClient.fetchResultPage(3) returns Future(Option(page3))
       mockBenchClient.fetchResultPage(4) returns Future(None)
 
-      val result = await(transactionRetriever.fetchAllTransactionPages())
+      val result = await(transactionRetriever.fetchAllTransactionPages)
 
       result mustEqual Seq(page1, page2, page3)
 
@@ -48,7 +48,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
       mockBenchClient.fetchResultPage(2) returns Future(Option(page2))
       mockBenchClient.fetchResultPage(3) returns Future(None)
 
-      val result = await(transactionRetriever.fetchAllTransactionPages())
+      val result = await(transactionRetriever.fetchAllTransactionPages)
 
       result mustEqual Seq(page1, page2)
 
@@ -65,7 +65,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
       mockBenchClient.fetchResultPage(2) returns Future(Option(page2))
       mockBenchClient.fetchResultPage(3) returns Future(None)
 
-      val result = await(transactionRetriever.fetchAllTransactionPages())
+      val result = await(transactionRetriever.fetchAllTransactionPages)
 
       result mustEqual Seq(page1, page2)
 
@@ -78,7 +78,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
     "return nothing when there are no pages" in new TestScope {
       mockBenchClient.fetchResultPage(anyInt) returns Future(None)
 
-      val result = await(transactionRetriever.fetchAllTransactionPages())
+      val result = await(transactionRetriever.fetchAllTransactionPages)
 
       result mustEqual Seq.empty
 
@@ -90,7 +90,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
       val page1 = TransactionPage(0, 1, Seq.empty)
       mockBenchClient.fetchResultPage(anyInt) returns Future(Option(page1))
 
-      val result = await(transactionRetriever.fetchAllTransactionPages())
+      val result = await(transactionRetriever.fetchAllTransactionPages)
 
       result mustEqual Seq(page1)
 
@@ -99,9 +99,9 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
     }
 
     "throw an exception if a server response is invalid" in new TestScope {
-      mockBenchClient.fetchResultPage(anyInt) returns Future.failed(new IOException())
+      mockBenchClient.fetchResultPage(anyInt) returns Future.failed(new IOException)
 
-      await(transactionRetriever.fetchAllTransactionPages()) must throwAn[IOException]
+      await(transactionRetriever.fetchAllTransactionPages) must throwAn[IOException]
     }
   }
 }
