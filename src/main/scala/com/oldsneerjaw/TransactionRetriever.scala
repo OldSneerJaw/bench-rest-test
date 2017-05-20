@@ -1,7 +1,5 @@
 package com.oldsneerjaw
 
-import java.io.IOException
-
 import scala.concurrent._
 
 /**
@@ -12,11 +10,12 @@ import scala.concurrent._
 class TransactionRetriever(benchApiClient: BenchApiClient)(implicit executionContext: ExecutionContext) {
 
   /**
-    * Retrieves a stream of all transaction pages.
+    * Retrieves a collection of all transaction pages.
     *
-    * @return The transaction pages as a stream
+    * @return A future collection of all transaction pages. The Future will throw in these cases:
+    *         - ParseException: if a response's format is invalid
+    *         - HttpResponseException: if an unexpected HTTP response status is received
     */
-  @throws[IOException]("if the one of the server's responses is invalid")
   def fetchAllTransactionPages(): Future[Stream[TransactionPage]] = {
     // Start by retrieving the first page to see what we're dealing with
     benchApiClient.fetchResultPage(1) flatMap {

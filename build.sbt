@@ -1,6 +1,6 @@
 name := "bench-rest-test"
 
-version := "2.0.0-SNAPSHOT"
+version := "3.0.0-SNAPSHOT"
 
 scalaVersion := "2.11.11"
 

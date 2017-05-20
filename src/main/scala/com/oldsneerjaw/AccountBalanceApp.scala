@@ -1,9 +1,11 @@
 package com.oldsneerjaw
 
+import java.text.ParseException
 import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import akka.stream._
+import org.apache.http.client.HttpResponseException
 import play.api.libs.ws.ahc._
 
 import scala.concurrent._
@@ -22,25 +24,28 @@ object AccountBalanceApp extends App {
   val transactionRetriever = new TransactionRetriever(apiClient)
   val balanceCalculator = new BalanceCalculator()
 
-  val futureTransanctionPages = transactionRetriever.fetchAllTransactionPages()
+  val outputFuture = transactionRetriever.fetchAllTransactionPages().map { transactionPages =>
+    val dailyBalances = balanceCalculator.calculateDailyBalances(transactionPages)
 
-  // Execute the future to retrieve the stream of pages
-  val transactionPages = Await result(futureTransanctionPages, Duration(30, TimeUnit.SECONDS))
+    // Previously this relied on `balanceCalculator.calculateTotal`, but the total is already available to us via the last daily balance, so
+    // there's no need to duplicate effort
+    val totalBalance = dailyBalances.lastOption.map(_.balance).getOrElse(BigDecimal(0))
 
-  val dailyBalances = balanceCalculator.calculateDailyBalances(transactionPages)
+    // Print out the balances, formatted with two decimal places
+    dailyBalances foreach { dailyBalance =>
+      val dateString = IsoDateTimeFormatter.formatter.print(dailyBalance.date)
+      val formattedBalance = dailyBalance.balance.setScale(2)
+      println(s"$dateString: $formattedBalance")
+    }
 
-  // Previously this relied on `balanceCalculator.calculateTotal`, but the total is already available to us via the last daily balance, so
-  // there's no need to duplicate effort
-  val totalBalance = dailyBalances.lastOption.map(_.balance).getOrElse(BigDecimal(0))
-
-  // Print out the balances, formatted with two decimal places
-  dailyBalances foreach { dailyBalance =>
-    val dateString = IsoDateTimeFormatter.formatter.print(dailyBalance.date)
-    val formattedBalance = dailyBalance.balance.setScale(2)
-    println(s"$dateString: $formattedBalance")
+    println(s"Total balance: ${totalBalance.setScale(2)}")
+  }.recover {
+    case ex: ParseException => println(s"Could not parse API response: ${ex.getMessage}")
+    case ex: HttpResponseException => println(s"Encountered an unexpected response status (${ex.getStatusCode}): ${ex.getMessage}")
   }
 
-  println(s"Total balance: ${totalBalance.setScale(2)}")
+  // Execute the future
+  Await result(outputFuture, Duration(30, TimeUnit.SECONDS))
 
   wsClient.close()
   actorSystem.terminate()
