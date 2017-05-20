@@ -16,13 +16,13 @@ class TransactionRetriever(benchApiClient: BenchApiClient)(implicit executionCon
     *         - ParseException: if a response's format is invalid
     *         - HttpResponseException: if an unexpected HTTP response status is received
     */
-  def fetchAllTransactionPages(): Future[Stream[TransactionPage]] = {
+  def fetchAllTransactionPages(): Future[Seq[TransactionPage]] = {
     // Start by retrieving the first page to see what we're dealing with
     benchApiClient.fetchResultPage(1) flatMap {
-      case None => Future.successful(Stream.empty)
+      case None => Future.successful(Seq.empty)
       case Some(firstPage) if firstPage.transactions.isEmpty =>
         // It should be safe to assume that, if the first page has no transactions, there won't be any subsequent pages
-        Future.successful(Stream(firstPage))
+        Future.successful(Seq(firstPage))
       case Some(firstPage) if firstPage.transactions.nonEmpty =>
         // Determine the total number of pages - assuming that subsequent pages will have the same number of transactions as the first page
         // (except possibly for the last page, which may have fewer transactions)

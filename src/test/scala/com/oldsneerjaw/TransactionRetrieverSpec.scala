@@ -30,7 +30,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
       val result = await(transactionRetriever.fetchAllTransactionPages())
 
-      result.toList mustEqual List(page1, page2, page3)
+      result mustEqual Seq(page1, page2, page3)
 
       there was one(mockBenchClient).fetchResultPage(1)
       there was one(mockBenchClient).fetchResultPage(2)
@@ -50,7 +50,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
       val result = await(transactionRetriever.fetchAllTransactionPages())
 
-      result.toList mustEqual List(page1, page2)
+      result mustEqual Seq(page1, page2)
 
       there was one(mockBenchClient).fetchResultPage(1)
       there was one(mockBenchClient).fetchResultPage(2)
@@ -67,7 +67,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
       val result = await(transactionRetriever.fetchAllTransactionPages())
 
-      result.toList mustEqual List(page1, page2)
+      result mustEqual Seq(page1, page2)
 
       there was one(mockBenchClient).fetchResultPage(1)
       there was one(mockBenchClient).fetchResultPage(2)
@@ -80,7 +80,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
       val result = await(transactionRetriever.fetchAllTransactionPages())
 
-      result.toList mustEqual List.empty
+      result mustEqual Seq.empty
 
       there was one(mockBenchClient).fetchResultPage(1)
       there was no(mockBenchClient).fetchResultPage(2)
@@ -92,7 +92,7 @@ class TransactionRetrieverSpec extends PlaySpecification with Mockito {
 
       val result = await(transactionRetriever.fetchAllTransactionPages())
 
-      result.toList mustEqual List(page1)
+      result mustEqual Seq(page1)
 
       there was one(mockBenchClient).fetchResultPage(1)
       there was no(mockBenchClient).fetchResultPage(2)
